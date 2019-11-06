@@ -23,4 +23,5 @@
         "dialect": "mysql",
         "operatorsAliases": false
     }
+    
 }

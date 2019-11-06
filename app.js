@@ -5,13 +5,18 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var Cors = require('cors');
+var auth = require('./middleware/auth')
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+
+// var indexRouter = require('./routes/index');
+// var usersRouter = require('./routes/users');
 var loginRouter = require('./routes/login');
 var registerRouter = require('./routes/register');
-var updateProfile = require('./routes/profile');
-
+var Profile = require('./routes/profile');
+var resetPassword = require('./routes/resetpassword')
+var updateProfile = require('./routes/updateYourProfile')
+var uploadAvatar = require('./routes/uploadAvatar')
+var googleLogin = require('./routes/googleauth')
 var passport = require('passport');
 
 var app = express();
@@ -32,12 +37,24 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
+
+// app.use('/', indexRouter);
+// app.use('/users', usersRouter);
 app.use('/login',loginRouter);
 app.use('/register',registerRouter);
-app.use('/update-profile',updateProfile);
+//private Route - check header: x-auth-token : this is token of jwt generator after login.
+app.use('/auth/profile',auth,Profile);
+app.use('/auth/reset-password',auth,resetPassword);
+app.use('/auth/update-profile',auth,updateProfile);
+app.use ('/auth/upload-avatar',uploadAvatar);
+app.use('/login/google',googleLogin);
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "localhost:8080"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

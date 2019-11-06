@@ -6,12 +6,13 @@ var router = express.Router();
 
 var registerUserRoute = (req,res,next) =>{ 
     passport.authenticate('register',(err,user,info)=>{
-        if(err) console.log(err)
+        if(err) return res.status(400).json({msg:"User already exist"})
         if(info != undefined){
             console.log(info.message)
-            res.send(info.message)
+            return res.status(400).json({msg:"User already exist"})
         } else {
             req.logIn(user,err => {
+                
                 const data = {
                     fullname : req.body.fullname,
                     email : req.body.email,
@@ -26,7 +27,7 @@ var registerUserRoute = (req,res,next) =>{
                     //    .updateInforAfterCheck({fullname:data.fullname,email:data.email,imgAvatar:data.imgAvatar})
                             .then(()=>{
                                 console.log("user created in db")
-                                res.status(200).send({message:'user created'})
+                                res.status(200).send({msg:'user created'})
                             })
                     })
             })
